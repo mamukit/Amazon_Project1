@@ -1,27 +1,28 @@
 package com.stepdefAmazon;
 
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.testng.Reporter;
 
-import com.cucumber.listener.Reporter;
 import com.extentreportAmazon.BaseTestAmazon;
+import com.generic.library.AmazonLogin;
 import com.pagefactoryAmazon.AmazonPagefactory;
-import com.utility.HighLighter;
+import com.pagefactoryAmazon.MasterPageFactory;
+import com.utility.Highlighter;
 import com.utility.TakeScreenShot;
 
 import cucumber.api.java.en.Given;
@@ -31,7 +32,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
 
 public class AmazonStepDef extends BaseTestAmazon {
 	WebDriver driver;
-	AmazonPagefactory apg;
+	AmazonPagefactory pf;
 	int num;
 	int pricesiphone;
 	int random;
@@ -45,149 +46,146 @@ public class AmazonStepDef extends BaseTestAmazon {
 	Select select;
 	Select select1;
 	WebDriverWait wait;
-	
+	Highlighter color;
+	Actions ac;	
+
+	@Given("^User able to login amazon with valid credential$")
+	public void user_able_to_login_amazon_with_valid_credential() throws Throwable {
 		
-@BeforeTest	
-	@Given("^User able to open Chrome browser$")
-	public void user_able_to_open_Chrome_browser() throws Throwable {
-	    
-		System.setProperty("webdriver.chrome.driver", "./driver/chromedriver.exe");
-		driver = new ChromeDriver();
+		AmazonLogin login = new AmazonLogin(driver);
+		driver=login.getLogIn();
+		pf = PageFactory.initElements(driver, MasterPageFactory.class);
+		color = new Highlighter(driver);
+		ac =new Actions(driver);
 	
 			}
-@Test
-	@Given("^Put URL and go to home page$")
-	public void put_URL_and_go_to_home_page() throws Throwable {
-		driver.get("https://www.amazon.com/");
-		apg = PageFactory.initElements(driver, AmazonPagefactory.class);
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		driver.manage().window().maximize();
-	    
-	}
-
-	@When("^User enters Username as \"([^\"]*)\" and Password as \"([^\"]*)\"$")
-	public void user_enters_Username_as_and_Password_as(String email, String password) throws Throwable{
-	    apg.getSigninbtn().click();
-	    apg.getEmail().sendKeys(email);
-	    TakeScreenShot.captureScreenShot(driver, "Enter email");
-	    apg.getEmail().submit();
-	    apg.getPass().sendKeys(password);
-	    
-	    TakeScreenShot.captureScreenShot(driver, "Enter password");
-	    apg.getPass().submit();       
-
-	}
-
-	@Then("^login should be successful$")
-	public void login_should_be_successful() throws Throwable {
-	    System.out.println(driver.getTitle());
-	    TakeScreenShot.captureScreenShot(driver, "Successful Login");
-	    
-	}
 
 	@Then("^Validate Amazon homepage$")
 	public void validate_Amazon_homepage() throws Throwable {
-	    String pageTitle = "Amazon";
-		if(driver.getTitle().equalsIgnoreCase(pageTitle)){
-			System.out.println("Test Passed>>>> Page Title:: " + driver.getTitle());
-					}
-		else {
-			System.out.println("Test Failed>>>> Page Title:: " + driver.getTitle());
-		}
-		
-		Reporter.addStepLog("Page Title::"+driver.getTitle());
+		 String pageTitle = "Amazon";
+			if(driver.getTitle().contains(pageTitle)){
+				System.out.println("=================================================");
+				System.out.println("Test Passed>>>> Page Title:: " + driver.getTitle());
+						}
+			else {
+				System.out.println("Test Failed>>>> Page Title:: " + driver.getTitle());
+			}
+			
+			Reporter.log("Page Title::"+driver.getTitle());
 	}
 	    	
 	@Then("^take screenshot of the homepage$")
 	public void take_screenshot_of_the_homepage() throws Throwable {
-		TakeScreenShot.captureScreenShot(driver, "Homepage");
+		//TakeScreenShot.captureScreenShot(driver, "Homepage");
 	    
 	}
-@Test
+
 	@Given("^User able to search for 'iphone'$")
 	public void user_able_to_search_for_iphone() throws Throwable {
-		apg.getSearchbox().sendKeys("iphone");
-		HighLighter.getDrawRedColor(driver, apg.getSearchbox());
-		apg.getSearchbox().submit();
-	    Thread.sleep(2000);
+		
+		color.drawBorder(pf.getSearchbox(),"red");
+		pf.getSearchbox().sendKeys("iphone");
+		pf.getSearchbox().submit();
+	    
 	}
 
 	@Given("^sort the price from high to low$")
 	public void sort_the_price_from_high_to_low() throws Throwable {
-		select = new Select(apg.getSelect());
+	select = new Select(pf.getSelect());
 		select.selectByIndex(2);
 	    Thread.sleep(3000);
 	}
 
 	@Then("^User able to count the number of 'iphone x'$")
 	public void user_able_to_count_the_number_of_iphone_x() throws Throwable {
-	    num = apg.getIphones().size();
+	  
+		//list<WEBELEMENT> =pf.getIphones()
+		
+		
 	    iphonenames = new ArrayList<String>();
 	    iphonex = new ArrayList<String>();
-		for(WebElement names: apg.getIphones()) {
+	    
+	
+	    
+		for(WebElement names: pf.getIphones()) {
+			ac.moveToElement(names).build().perform();
+			color.drawBorder(names,"red");
 			iphonenames.add(names.getText().toString());
 			if(names.getText().contains("iPhone X")) {
 				iphonex.add(names.getText().toString());
 			}
 		}
+		System.out.println("---------------------------------------");
 		System.out.println(iphonex);
+		System.out.println("---------------------------------------");
 		System.out.println("Number of iphone X is: " +iphonex.size());
-		Thread.sleep(2000);
+		
 	 }
 
 	@Then("^Find out the number of 'iphone' and 'iphone' names on the first page$")
 	public void find_out_the_number_of_iphone_and_iphone_names_on_the_first_page() throws Throwable {
+		int num = pf.getIphones().size();
+		System.out.println("---------------------------------------");
 		System.out.println("Number of iphones on the first page is " +num);
+		System.out.println("---------------------------------------");
 		System.out.println(iphonenames);
 	    
 	}
 
 	@Then("^Find out the total number of pages$")
 	public void find_out_the_total_number_of_pages() throws Throwable {
-	    System.out.println("Total page number is:: " + apg.getPagenumber());
-		Thread.sleep(2000);
-		HighLighter.getDrawBlueYellow(driver, apg.getPagenumber());
+	   ac.moveToElement(pf.getPagenumber());
+	   System.out.println("---------------------------------------");
+		System.out.println("Total page number is:: " + pf.getPagenumber().getText());
+		
+		color.drawBorder(pf.getPagenumber(),"red");
 	    
 	}
-@Test
+
 	@When("^User able to search for 'iphone x'$")
 	public void user_able_to_search_for_iphone_x() throws Throwable {
-	apg.getSearchbox().clear();
-	apg.getSearchbox().sendKeys("iphone x");
-	    HighLighter.getDrawRedColor(driver, apg.getSearchbox());
-	    apg.getSearchbox().submit();
+		pf.getSearchbox().clear();
+		pf.getSearchbox().sendKeys("iphone x");
+		color.drawBorder(pf.getSearchbox(),"red");
+	    pf.getSearchbox().submit();   
 	    Thread.sleep(2000);
-	        
 	}
 
 	@When("^check the 'Apple brand' checkbox$")
 	public void check_the_Apple_brand_checkbox() throws Throwable {
-		apg.getApplecheckbox().click();
-		HighLighter.getDrawRedColor(driver, apg.getApplecheckbox());
-	    Thread.sleep(2000);
+		
+		new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getApplecheckbox()));
+		ac.moveToElement(pf.getApplecheckbox()).click().build().perform();
+		color.drawBorder(pf.getApplecheckbox(),"red"); 
+		Thread.sleep(2000);
    	}
 
 	@When("^sort the price from low to high$")
 	public void sort_the_price_from_low_to_high() throws Throwable {
-		select.selectByIndex(1);
-	    Thread.sleep(2000);	 
+		new WebDriverWait(driver,60).until(ExpectedConditions.visibilityOf(pf.getSelect()));
+		select.selectByIndex(1);  
+		Thread.sleep(2000);
 	 }
 
 	@Then("^User able to find out the highest and lowest 'iphone x' prices on the first page$")
 	public void user_able_to_find_out_the_highest_and_lowest_iphone_x_prices_on_the_first_page() throws Throwable {
-	    pricesiphone = apg.getIphonepricebig().size();
+		new WebDriverWait(driver,60).until(ExpectedConditions.visibilityOf(pf.getIphonepricebig().get(0)));
+	 
+		
+		pricesiphone = pf.getIphonepricebig().size();
 	    iphoneprices =  new ArrayList<Integer>();
 	    System.out.println(pricesiphone);
-		for(int i =0; i< pricesiphone; i++) {
-			String x =apg.getIphonepricebig().get(i).getText().replace(",", "");
+	
+	    
+	    
+	    for(int i =0; i< pricesiphone; i++) {
+			ac.moveToElement(pf.getIphonepricebig().get(i)).perform();
+			color.drawBorder(pf.getIphonepricebig().get(i),"red");
+			//System.out.println(pf.getIphonepricebig().get(i).getText());
+			String x =pf.getIphonepricebig().get(i).getText().replace(",", "");
 			iphoneprices.add(Integer.parseInt(x));
 		}
-			//System.out.println(iphoneprices);
-		for(int i = iphoneprices.size()-1; i >=0; i--) {
-				if(iphoneprices.get(i) < 600) {
-					iphoneprices.remove(i);
-			}
-		}
+
 		System.out.println(iphoneprices);
 		max = Collections.max(iphoneprices);
 		min = Collections.min(iphoneprices);
@@ -195,87 +193,128 @@ public class AmazonStepDef extends BaseTestAmazon {
 		System.out.println("Minimum iPhone X price is:: " + min);
 	    
 	}
-@Test
+
 	@When("^User able to click on one 'iphone'$")
 	public void user_able_to_click_on_one_iphone() throws Throwable {
-		random = ThreadLocalRandom.current().nextInt(0, apg.getIphonexlist().size());
-		apg.getIphonexlist().get(random).click();
-	    
+		pf.getIphonexlist().get(0).click();
+		Thread.sleep(2000);
+	/*	random = ThreadLocalRandom.current().nextInt(0, pf.getIphonexlist().size());
+		pf.getIphonexlist().get(random).click();*/
+	 
 	}
 
 	@Then("^User able to add the item to cart$")
 	public void user_able_to_add_the_item_to_cart() throws Throwable {
-		//random = ThreadLocalRandom.current().nextInt(0, apg.getIphonexlist().size());
-		try{
-			apg.getAddtocartbtn().click();
+	
+		 new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getAddtocartbtn()));
+			pf.getAddtocartbtn().click();
+
 			
-	} catch(NoSuchElementException e) {
-		driver.navigate().back();
-		Thread.sleep(2000);
-		apg.getIphonexlist().get(random).click();
-		apg.getAddtocartbtn().click();
-	}
-		try {
-			apg.getNothankbtn().click();
-		}  catch (NoSuchElementException|ElementNotVisibleException exc){
-			//apg.getSearchbox().click();
+			if(pf.getNothankbtn().size()>0) {
+				new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getNothankbtn().get(0)));
+					
+				ac.moveToElement(pf.getNothankbtn().get(0)).click(pf.getNothankbtn().get(0)).build().perform();
+				
+				
+				if(pf.getNothankbtn().size()>0) {
+				Robot robot = new Robot();
+					robot.keyPress(KeyEvent.VK_ESCAPE);
+					robot.keyRelease(KeyEvent.VK_ESCAPE);
+					
+				}
+			}
+	
+		
+		
+		if(pf.getProceedbtn().size()>0) {
+			new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getProceedbtn().get(0)));
+			pf.getProceedbtn().get(0).click();
+			
 		}
+		else {
+			
+			pf.getMyCartbtn().click();
+			new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getProceedbtn().get(0)));
+			pf.getProceedbtn().get(0).click();
+		
+		}
+		
+		//=====================================================
+	
+		Thread.sleep(2000);
+		driver.quit();
 	}
-@Test
+	// Scenario: two will start from here
+	
 	@Given("^User able to search for 'HP laptop'$")
 	public void user_able_to_search_for_HP_laptop() throws Throwable {
-		select1 = new Select(apg.getMerchandisechoice());
+		select1 = new Select(pf.getMerchandisechoice());
 	    select1.selectByIndex(0);
-	    //Thread.sleep(2000);
-	    apg.getSearchbox().clear();
-	    apg.getSearchbox().sendKeys("HP laptop");
-	    HighLighter.getDrawRedColor(driver, apg.getSearchbox());
-	    apg.getSearchbox().submit();
-	    Thread.sleep(2000);
+	    pf.getSearchbox().clear();
+	    pf.getSearchbox().sendKeys("HP laptop");
+	    color.drawBorder(pf.getSearchbox(),"red");
+	    pf.getSearchbox().submit();  
 	}
 	
 	@Given("^sort the price of HP laptops from high to low$")
 	public void sort_the_price_of_HP_laptops_from_high_to_low() throws Throwable {
+		select = new Select(pf.getSelect());
 		select.selectByIndex(2);
 		Thread.sleep(2000);
 	}
 
 	@Then("^User able to find out the total number of 'HP laptop' and 'HP laptop' names on the first page$")
 	public void user_able_to_find_out_the_total_number_of_HP_laptop_and_HP_laptop_names_on_the_first_page() throws Throwable {
-	    num = apg.getLaptoplist().size();
-	    laptopnames =  new ArrayList<String>();	
-		for(WebElement names: apg.getLaptoplist()) {
-			laptopnames.add(names.getText().toString());
-				
-			}
+	   
+		num = pf.getLaptoplist().size();
 		System.out.println("Number of laptops on page 1:: " + num);
-		System.out.println("List of laptops:: "+ laptopnames);
+	    System.out.println("---------------------------------------");
+	    laptopnames =  new ArrayList<String>();	
+	    ac.moveToElement(pf.getLaptoplist().get(0)).build().perform();
+	    new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getLaptoplist().get(0)));
 	    
+	    for(WebElement names: pf.getLaptoplist()) {
+			
+				ac.moveToElement(names).build().perform();
+				color.drawBorder(names, "green");
+	       
+			laptopnames.add(names.getText().toString());
+			}
+		System.out.println("List of laptops:: "+ laptopnames.toString());
 	}
 
 	@Then("^find out the total page number$")
 	public void find_out_the_total_page_number() throws Throwable {
-	    System.out.println("Total page number is:: " +apg.getPagenumber());
-	    Thread.sleep(2000);
-		HighLighter.getDrawBlueYellow(driver, apg.getPagenumber());
+	    System.out.println("Total page number is:: " +pf.getPagenumber().getText());
+	    ac.moveToElement(pf.getPagenumber()).build().perform();
+	    color.drawBorder(pf.getPagenumber(),"red");
+	    
 	}
 
 	@When("^User sort the price from low to high$")
 	public void user_sort_the_price_from_low_to_high() throws Throwable {
+		 ac.moveToElement(pf.getSelect()).build().perform();
+		select = new Select(pf.getSelect());
 		select.selectByIndex(1);
-	    Thread.sleep(2000);
-	    //wait = new WebDriverWait(driver, 10);
-	    //WebElement element = wait.until(ExpectedConditions.elementToBeClickable(apg.getHPcheckbox()));
-	    apg.getHPcheckbox().click();
-	    HighLighter.getDrawBlueYellow(driver, apg.getHPcheckbox());
-	    Thread.sleep(2000);
+		Thread.sleep(2000);
+		 ac.moveToElement(pf.getHPcheckbox()).build().perform();
+		 new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getHPcheckbox()));
+	    pf.getHPcheckbox().click();
+	    color.drawBorder(pf.getHPcheckbox(),"red");
+	    
 	}
 
 	@Then("^User able to find the highest and lowest 'HP laptop' price on the first page$")
 	public void user_able_to_find_the_highest_and_lowest_HP_laptop_price_on_the_first_page() throws Throwable {
+		
+		Thread.sleep(2000);
 		laptopprices  = new ArrayList<Double>();
-		for(int i =0; i< apg.getHPprices().size(); i++) {
-			String x =apg.getHPprices().get(i).getText().replace("$", "");
+	
+		for(int i =0; i< pf.getHPprices().size(); i++) {
+			
+			ac.moveToElement(pf.getHPprices().get(i)).build().perform();
+			 color.drawBorder(pf.getHPprices().get(i),"red");
+			String x =pf.getHPprices().get(i).getText().replaceAll("\\D+","");
 			laptopprices.add(Double.parseDouble(x));
 		}
 		System.out.println(laptopprices);
@@ -283,113 +322,88 @@ public class AmazonStepDef extends BaseTestAmazon {
 		min = Collections.min(laptopprices);
 		System.out.println("Maximum HP laptop price is:: " + max);
 		System.out.println("Minimum HP laptop price is:: " + min);
-			    
+		     
 	}
-@Test
-	@When("^User able to select one 'HP laptop'$")
-	public void user_able_to_select_one_HP_laptop() throws Throwable {
-		random = ThreadLocalRandom.current().nextInt(0, apg.getHPlist().size());
-		apg.getHPlist().get(random).click();
-		Thread.sleep(2000);
-	}
+	@When("^Add one laptop in cart$")
+	public void add_one_laptop_in_cart() throws Throwable {
+		
+		
+		
+		/*random = ThreadLocalRandom.current().nextInt(0, pf.getLaptoplist().size());
+		pf.getLaptoplist().get(random).click()*/;
+		
+		pf.getLaptoplist().get(0).click();
+		 new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getAddtocartbtn()));
+			pf.getAddtocartbtn().click();
 
-	@Then("^User able to add the new item to cart$")
-	public void user_able_to_add_the_new_item_to_cart() throws Throwable {
-		try{
-			apg.getAddtocartbtn().click();
+			if(pf.getNothankbtn().size()>0) {
+				pf.getNothankbtn().get(0).click();
+				
+			}
 			
-	} catch(NoSuchElementException e) {
-		driver.navigate().back();
-		Thread.sleep(2000);
-		apg.getHPlist().get(random).click();
-		apg.getAddtocartbtn().click();
-	}
+			if(pf.getNothankbtn2().size()>0) {
+				pf.getNothankbtn2().get(0).click();
+				
+			}
+		
+		if(pf.getProceedbtn().size()>0) {
+			new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getProceedbtn().get(0)));
+			pf.getProceedbtn().get(0).click();
+			
+		}
+		else {
+			
+			pf.getMyCartbtn().getClass();
+			new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getProceedbtn().get(0)));
+			pf.getProceedbtn().get(0).click();
+		
+		}
+		
+	
+		
 		
 	}
+
+	@When("^Provide invalide payment information$")
+	public void provide_invalide_payment_information() throws Throwable {
+		new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getDeliverbtn()));
+		color.drawBorder(pf.getDeliverbtn(),"red");
+	    pf.getDeliverbtn().click();
+	    
+		new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getContinuebtn2()));
+	    color.drawBorder(pf.getContinuebtn2(),"red");
+	    pf.getContinuebtn2().click();
+	    
+	}
 	
-
-	@When("^User able to proceed to cart$")
-	public void user_able_to_proceed_to_cart() throws Throwable {
-	Thread.sleep(2000);
-		try {
-			apg.getNothankbtn().click();
-			
-		}  catch (NoSuchElementException e){
-			
-					}
-		try {
-			apg.getNothankbtn2().click();
-			
-		}  catch (NoSuchElementException e){
-			
-					}
-		apg.getProceedbtn().click();
-	} 
 	
-	@When("^User enters his email and password$")
-	public void user_enters_his_email_and_password() throws Throwable {
-		apg.getEmail().sendKeys("tuan_nguyen30412@hotmail.com");
-		apg.getEmail().submit();
-		apg.getPass().sendKeys("Voiu30412");
-		apg.getPass().submit();
-	}
-
-	@Then("^click on the 'Deliver' button$")
-	public void click_on_the_Deliver_button() throws Throwable {
-		HighLighter.getDrawBlueColor(driver, apg.getDeliverbtn());
-	    apg.getDeliverbtn().click();
-	    Thread.sleep(2000);
-	    
-	}
-
-	@Then("^click on the 'Continue' button$")
-	public void click_on_the_Continue_button() throws Throwable {
-		HighLighter.getDrawBlueColor(driver, apg.getContinuebtn2());
-	    apg.getContinuebtn2().click();
-	    Thread.sleep(2000);
-	    
-	}
-
-	@When("^User enter invalid name on card as \"([^\"]*)\" and card number as \"([^\"]*)\"$")
-	public void user_enter_invalid_name_on_card_as_and_card_number_as(String nameoncard, String cardnumber) throws Throwable {
-	    apg.getNameoncard().sendKeys(nameoncard);
-	    apg.getCardnumber().sendKeys(cardnumber);
-	    Thread.sleep(2000);
-	}
-
-	@When("^select expired month and year$")
-	public void select_expired_month_and_year() throws Throwable {
-	    apg.getSelectmonth().click();
-	    apg.getMonth3().click();
-	    apg.getSelectyear().click();
-	    apg.getYear3().click();
-	    TakeScreenShot.captureScreenShot(driver, "Invalid payment info");
-	    
-	}
-
-	@When("^User click on the 'Add your card' button$")
-	public void user_click_on_the_Add_your_card_button() throws Throwable {
-	    apg.getAddyourcardbtn().click();
-	    
-	    
-	}
-
 	@Then("^User not able to proceed and payment fails$")
 	public void user_not_able_to_proceed_and_payment_fails() throws Throwable {
-		String problem = "There was a problem";
-		Assert.assertEquals(apg.getProblemmessage().getText(), problem);
-		
+		new WebDriverWait(driver,60).until(ExpectedConditions.elementToBeClickable(pf.getNameoncard()));
+			pf.getNameoncard().sendKeys("Student");
+		    pf.getCardnumber().sendKeys("4232345345535");
+		    pf.getSelectmonth().click();
+		    pf.getMonth3().click();
+		    pf.getSelectyear().click();
+		    pf.getYear3().click();
+		    
+		    TakeScreenShot.captureScreenShot(driver, "Invalid payment info");
+		      pf.getAddyourcardbtn().click();
+		      Thread.sleep(2000);
 	}
 
 	@Then("^take screenshot of the failed payment$")
 	public void take_screenshot_of_the_failed_payment() throws Throwable {
-		TakeScreenShot.captureScreenShot(driver, "Cannot proceed");
-	    
+		String problem = "There was a problem";
+		Assert.assertEquals(pf.getProblemmessage().getText(), problem);
+		TakeScreenShot.captureScreenShot(driver, "Cannot proceed");  
+		Thread.sleep(2000);
 	}
-@AfterTest	
+
 	@Then("^close the browser$")
 	public void close_the_browser() throws Throwable {
 		driver.quit();
+		
+	
 	}
-
 }

@@ -9,7 +9,7 @@ import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 
-public class AmazonPagefactory {
+public abstract class AmazonPagefactory {
 
 	WebDriver driver;
 public AmazonPagefactory(WebDriver driver) {
@@ -17,63 +17,79 @@ public AmazonPagefactory(WebDriver driver) {
 	PageFactory.initElements(driver, this);
 	
 }
-@FindBy (how = How.XPATH, using = "//*[@id ='nav-link-accountList']")
+@FindBy (xpath = "//*[@id ='nav-link-accountList']")
 private WebElement signinbtn;
-@FindBy (how = How.XPATH, using = "//*[@id ='ap_email']")
+@FindBy (xpath = "//*[@id ='ap_email']")
 private WebElement email;
 @FindBy (how = How.CSS, using = "#ap_password")
 private WebElement pass;
-@FindBy (how = How.XPATH, using = "//*[@id='twotabsearchtextbox']")
+@FindBy (xpath = "//*[@id='twotabsearchtextbox']")
 private WebElement searchbox;
-@FindBy (how = How.XPATH, using = "//*[@id='sort']")
+@FindBy (xpath = "//*[@id='sort']")
 private WebElement select;
-@FindBy (how = How.XPATH, using = "//ul[@id='s-results-list-atf']/li/div/div/div/div[2]/div/div/a")
+@FindBy (xpath = "//ul[@id='s-results-list-atf']/li/div/div/div/div[2]/div/div/a")
 private List<WebElement> iphones;
-@FindBy (how = How.XPATH, using = "//span[@class='pagnDisabled']")
+@FindBy (xpath = "//span[@class='pagnDisabled']")
 private WebElement pagenumber;
-@FindBy (how = How.XPATH, using = "//*[@name ='s-ref-checkbox-Apple']")
+@FindBy (xpath = "//*[contains(@name ,'checkbox-Apple')]")
 private WebElement Applecheckbox;
-@FindBy (how = How.XPATH, using = "//*[@class = 'sx-price-whole']")
+@FindBy (xpath = "//*[@class = 'sx-price-whole']")
 private List<WebElement> iphonepricebig;
-@FindBy (how = How.XPATH, using = "//h2[contains(text(), 'iPhone X')]|//h2[contains(text(), 'Iphone X')]")
+
+
+@FindBy (xpath = "//h2[contains(text(), 'iPhone X')]|//h2[contains(text(), 'Iphone X')]")
 private List<WebElement> iphonexlist;
-@FindBy (how = How.XPATH, using = "//input[@value= 'Add to Cart']")
+
+private String url= "https://www.amazon.com/";
+private String userName="studentttech@gmail.com";
+private String password ="student123";
+
+
+
+@FindBy (xpath = "//*[contains(text(),'Cart')]")
+private WebElement myCartbtn;
+@FindBy (xpath = "//input[@value= 'Add to Cart']")
 private WebElement addtocartbtn;
-@FindBy (how = How.XPATH, using = "//*[@id = 'searchDropdownBox']")
+@FindBy (xpath = "//*[@id = 'searchDropdownBox']")
 private WebElement merchandisechoice;
-@FindBy (how = How.XPATH, using = "//*[@class = 'a-size-medium s-inline  s-access-title  a-text-normal']")
+@FindBy (xpath = "//*[@class='a-fixed-left-grid']//*[name()='h2']")
 private List<WebElement> laptoplist;
-@FindBy (how = How.XPATH, using = "//*[@name = 's-ref-checkbox-HP']")
+@FindBy (xpath = "//*[@name = 's-ref-checkbox-HP']")
 private WebElement HPcheckbox;
-@FindBy (how = How.XPATH, using = "//*[@class = 'a-size-small a-link-normal a-text-normal']/span[2]|//*[@class = 'sx-price-whole']")
+@FindBy (xpath = "//*[@class='a-fixed-left-grid']//*[@class='a-size-base a-color-base' or @class='sx-price-whole']")
 private List<WebElement> HPprices;
-@FindBy (how = How.XPATH, using = "//*[@class='a-size-medium s-inline  s-access-title  a-text-normal']")
-private List<WebElement> HPlist;
-@FindBy (how = How.XPATH, using = "//*[@id ='siNoCoverage-announce']")
-private WebElement nothankbtn;
-@FindBy (how = How.XPATH, using = "//*[contains(text(),'No thanks')]")
-private WebElement nothankbtn2;
-@FindBy (how = How.XPATH, using = "(//*[contains(text(), 'Proceed to checkout')])[1]")
-private WebElement proceedbtn;
-@FindBy (how = How.XPATH, using = "(//*[@class ='a-declarative a-button-text '])[1]")
+/*@FindBy (xpath = "//*[@class='a-size-medium s-inline  s-access-title  a-text-normal']")
+private List<WebElement> HPlist;*/
+@FindBy (xpath = "//*[contains(text(),'No Thanks')]")
+private List<WebElement> nothankbtn;
+@FindBy (xpath = "//*[contains(text(),'No thanks')]")
+private List<WebElement> nothankbtn2;
+@FindBy (xpath = "(//*[contains(text(), 'Proceed to checkout')])[1]")
+private List<WebElement> proceedbtn;
+@FindBy (xpath = "(//*[@class ='a-declarative a-button-text '])[1]")
 private WebElement deliverbtn;
-@FindBy (how = How.XPATH, using = "(//input[@type ='submit'])[1]")
+@FindBy (xpath = "(//input[@type ='submit'])[1]")
 private WebElement continuebtn2;
-@FindBy (how = How.XPATH, using = "//*[@id = 'ccName']")
+@FindBy (xpath = "//*[@id = 'ccName']")
 private WebElement nameoncard;
-@FindBy (how = How.XPATH, using = "//*[@id = 'addCreditCardNumber']")
+
+
+@FindBy (xpath = "//*[@id='a-autoid-0-announce']")
+private List<WebElement> hpCustomizeBtn;
+
+@FindBy (xpath = "//*[@id = 'addCreditCardNumber']")
 private WebElement cardnumber;
-@FindBy (how = How.XPATH, using = "(//*[@class = 'a-button-text a-declarative'])[1]")
+@FindBy (xpath = "(//*[@class = 'a-button-text a-declarative'])[1]")
 private WebElement selectmonth;
-@FindBy (how = How.XPATH, using = "//*[@id = '1_dropdown_combobox']/li[3]")
+@FindBy (xpath = "//*[@id = '1_dropdown_combobox']/li[3]")
 private WebElement month3;
-@FindBy (how = How.XPATH, using = "(//*[@class = 'a-button-text a-declarative'])[2]")
+@FindBy (xpath = "(//*[@class = 'a-button-text a-declarative'])[2]")
 private WebElement selectyear;
-@FindBy (how = How.XPATH, using = "//*[@id = '2_dropdown_combobox']/li[3]")
+@FindBy (xpath = "//*[@id = '2_dropdown_combobox']/li[3]")
 private WebElement year3;
-@FindBy (how = How.XPATH, using = "//*[@id ='ccAddCard']")
+@FindBy (xpath = "//*[@id ='ccAddCard']")
 private WebElement addyourcardbtn;
-@FindBy (how = How.XPATH, using = "(//h4[contains(text(), 'There was a problem')])[1]")
+@FindBy (xpath = "(//h4[contains(text(), 'There was a problem')])[1]")
 private WebElement problemmessage;
 public WebElement getSigninbtn() {
 	return signinbtn;
@@ -120,16 +136,16 @@ public WebElement getHPcheckbox() {
 public List<WebElement> getHPprices() {
 	return HPprices;
 }
-public List<WebElement> getHPlist() {
+/*public List<WebElement> getHPlist() {
 	return HPlist;
-}
-public WebElement getNothankbtn() {
+}*/
+public List<WebElement> getNothankbtn() {
 	return nothankbtn;
 }
-public WebElement getNothankbtn2() {
+public List<WebElement> getNothankbtn2() {
 	return nothankbtn2;
 }
-public WebElement getProceedbtn() {
+public List<WebElement> getProceedbtn() {
 	return proceedbtn;
 }
 public WebElement getDeliverbtn() {
@@ -161,6 +177,23 @@ public WebElement getAddyourcardbtn() {
 }
 public WebElement getProblemmessage() {
 	return problemmessage;
+}
+
+public List<WebElement> getHpCustomizeBtn() {
+	return hpCustomizeBtn;
+}
+
+public String getUrl() {
+	return url;
+}
+public String getUserName() {
+	return userName;
+}
+public String getPassword() {
+	return password;
+}
+public WebElement getMyCartbtn() {
+	return myCartbtn;
 }
 
 

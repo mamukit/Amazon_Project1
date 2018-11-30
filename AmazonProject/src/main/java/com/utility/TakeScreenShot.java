@@ -1,6 +1,7 @@
 package com.utility;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,7 +13,7 @@ import org.openqa.selenium.WebDriver;
 
 public class TakeScreenShot {
 	
-public static String captureScreenShot(WebDriver driver, String ScreenShotName) throws Exception{
+public static String captureScreenShot(WebDriver driver, String ScreenShotName) {
 		
 		TakesScreenshot ts =(TakesScreenshot)driver;
 		File source=ts.getScreenshotAs(OutputType.FILE);
@@ -22,7 +23,12 @@ public static String captureScreenShot(WebDriver driver, String ScreenShotName) 
 	  String dateTime = dateFormat.format(date.getTime());
 		//String destination=".//RCO_Regression/Screenshot"+ScreenShotName+"-"+dateTime+".png";
 		String destination=currentDir +"//Screen Shot//"+dateTime+"//" +ScreenShotName + ".png";
-		FileUtils.copyFile(source, new File(destination));
+		try {
+			FileUtils.copyFile(source, new File(destination));
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
 		
 		System.out.println("Screen shot taken");
 		

@@ -6,6 +6,7 @@
       <class name="com.runnerAmazon.AmazonRunner">
         <methods>
           <include name="setUpClass"/>
+          <include name="teardown"/>
           <include name="feature" invocation-numbers="0"/>
           <include name="tearDownClass"/>
         </methods>

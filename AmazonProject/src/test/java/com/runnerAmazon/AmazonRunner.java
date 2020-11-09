@@ -2,7 +2,7 @@ package com.runnerAmazon;
 
 import java.io.File;
 
-import org.junit.AfterClass;
+import org.testng.annotations.AfterClass;
 
 import com.cucumber.listener.Reporter;
 
